@@ -34,5 +34,6 @@ Get Started:
 Wishlist:
 ========================
 
-Future versions will include the ability to parse and post 500-ish character blocks from full books or texts.
+- Future versions will include the ability to parse and post 500-ish character blocks from full books or texts.
+- And get rid of that time.sleep() thing in favor of actual scheduled tasks.
 
