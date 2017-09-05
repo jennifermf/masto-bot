@@ -33,23 +33,41 @@ except:
 mastodon_connection = Mastodon(client_id = args.client_credentials, access_token = args.user_credentials, api_base_url = "https://%s"%(hostname,))
 
 
-##############
-# toot stuff #
-##############
+# toot stuff
+
+def not_too_long(toot):
+    if len(toot) > 500:
+        return False
+    elif len(toot) == 0:
+        return False
+    else:
+        return True
+
+# read file that is given as first command line argument,
+# split it along empty lines,
+# throw out texts that are longer than 500 characters,
+# and have it be a list (filter returns an interable, which is not compatible with random.choice(),
+## because it as no pre-known length)
+
+toot_list = [ x for x in filter(not_too_long, open(args.input_file).read().split('\n---\n')) ]
+
 active = True
+
 while active:
     try:
-        toot_list = [line.strip() for line in open('quotes.txt')]
-        toot_text = random.choice(open('quotes.txt').readlines())
+        toot_text = random.choice(toot_list)
     except:
         print('Could not generate toot_text. Check your text file and try again.')
         active = False
+        break
     try:
-        status = mastodon.status_post(status = toot_text, visibility = visibility)
-        print('Toot success!')
+        status = mastodon_connection.status_post(status = toot_text, visibility = args.visibility)
+        print('Awoooooooo!')
         print('This toot:\n{}\n...was posted at {}.'.format(toot_text, status['created_at']))
         print()
     except:
         print('Failed to toot. :(')
         active = False
-    time.sleep(6*60*60)     # every 6 hours
+        break
+    time.sleep(args.time_interval)
+
