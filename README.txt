@@ -12,10 +12,12 @@ http://mastodonpy.readthedocs.io/
 Get Started:
 ========================
 
-1.  Set mastodon_hostname to the instance where your bot will live.
+1.  Install Mastodon.py: pip3 install Mastodon.py
+
+2.  Set mastodon_hostname to the instance where your bot will live.
     Set time.sleep() post frequency (in seconds).
 
-2.  You will need to generate a client_id, client_secret, and access_token, if you don't have one already.
+3.  You will need to generate a client_id, client_secret, and access_token, if you don't have one already.
     https://github.com/tootsuite/documentation/blob/master/Using-the-API/Testing-with-cURL.md
     This tool may be helpful:
     https://tinysubversions.com/notes/mastodon-bot/
