@@ -1,32 +1,37 @@
 # -*- coding: utf-8 -*-
-from mastodon import Mastodon
-import hidden
+
+import argparse
+import sys
 import random
 import time
+from mastodon import Mastodon
 
-##############
-# initialize #
-##############
 
-mastodon_hostname = 'botsin.space'      # your domain.name here
-secret = hidden.secret()                # store your secrets in hidden.py's secret(), as a dict()
-api_base_url = 'https://' + mastodon_hostname
+# parse command line arguments
 
-visibility = 'unlisted'                 # visibility can be 'direct' 'private' 'unlisted' or 'public'
+argument_parser = argparse.ArgumentParser(description="Simple Bot for the Mastodon social network")
 
-mastodon = Mastodon(client_id = secret['client_id'], client_secret = secret['client_secret'], access_token = secret['access_token'], api_base_url = api_base_url)
-headers = { 'Authorization': 'Bearer %s'%secret['access_token'] }
+argument_parser.add_argument("-cc", "--client-credentials", help="filename the client credentials should be stored to", type=str, default=".masto-bot.clientcred.secret")
+argument_parser.add_argument("-uc", "--user-credentials", help="filename the user credentials should be stored to", type=str, default=".masto-bot.usercred.secret")
+argument_parser.add_argument("-i", "--input-file", default="quotes.txt", help="The file the quotes are read from. Quotes are separated by an empty line, followed by three minus signs, followed by an empty line.")
+argument_parser.add_argument("-u", "--username", help="fully qualified username", type=str, required=True)
+argument_parser.add_argument("-t", "--time-interval", help="Time (in seconds) to wait in between toots.", type=int, default=6*60*60)
+argument_parser.add_argument("-v", "--visibility", help="Visibility scope of toots.", choices=('public', 'unlisted', 'private'), default='unlisted')
 
-##########
-# log in #
-##########
+args = argument_parser.parse_args()
 
 try:
-    mastodon.log_in(username = secret['email'], password = secret['password'], code = None, redirect_uri = "urn:ietf:wg:oauth:2.0:oob", scopes = ['write'])
-    print('Successfully logged in!')
+    (username, hostname) = args.username.split("@")
+except ValueError:
+    sys.exit("username must be of format username@servername, e.g. <emma.goldman@anarchists.in.space>")
 except:
-    print('Failed to log in. Check your hidden.py file and try again.')
-    quit()
+    sys.exit("unexpected error while parsing username")
+
+
+# establish connection to Mastodon server
+
+mastodon_connection = Mastodon(client_id = args.client_credentials, access_token = args.user_credentials, api_base_url = "https://%s"%(hostname,))
+
 
 ##############
 # toot stuff #
